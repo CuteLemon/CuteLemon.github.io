@@ -1,7 +1,7 @@
 name: White Paper
 kramkdown: redcarpet
 highlighter: pygments
-url: http://vinitkumar.me/white-paper
+url: https://cutelemon.github.io/
 paginate: 8
 description:     Jekyll theme for Programmers
 intro: A Blog of Data Science.
