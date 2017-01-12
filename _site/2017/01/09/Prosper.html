@@ -2,14 +2,14 @@
 <html>
 <head>
   <meta charset="utf-8">
-<title>Jekyll theme for Programmers</title>
-<meta name="description" content="Jekyll theme for Programmers">
+<title>CuteLemon's Blog</title>
+<meta name="description" content="CuteLemon's Blog">
 <meta name="keywords" content="">
 
 <meta property="og:type" content="article">
-<meta property="og:title" content="Data Visualization &#8211; ">
-<meta property="og:description" content="Jekyll theme for Programmers">
-<meta property="og:url" content="http://localhost:4000/2017/01/09/P6-Readme.html">
+<meta property="og:title" content="Prosper &#8211; ">
+<meta property="og:description" content="CuteLemon's Blog">
+<meta property="og:url" content="http://localhost:4000/2017/01/09/Prosper.html">
 <meta property="og:site_name" content="">
 
 <!-- Webmaster Tools verfication -->
@@ -17,7 +17,7 @@
 
 
 
-<link rel="canonical" href="http://localhost:4000/2017/01/09/P6-Readme.html">
+<link rel="canonical" href="http://localhost:4000/2017/01/09/Prosper.html">
 <link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
 
 <meta http-equiv="content-type" content="text/html; charset=utf-8" />
@@ -43,17 +43,16 @@
     <p class="intro">
       A Blog of Data Science.
     </p>
-  <h2>Data Visualization</h2>
+  <h2>Prosper</h2>
 <p class="meta">09 Jan 2017</p>
 
 <div class="post">
-<h2 id="section">摘要</h2>
-<p>本项目所用数据集是美国<a href="https://www.prosper.com/">Prosper</a>公司在2008-2014约11万条贷款交易记录。针对Prosper在2009年第二季度重新启动交易平台到2014第一季度的贷款记录，为了探索何种信用等级的人投资回报最大，统计了不同信用等级的人在交易平台预计的回报，利润，损失，并据此建立了可视化图表。可以发现信用等级为E的贷款者的预计回报一直保持高位，在2012内第四季度以后才被HR小幅度超越。</p>
+<p>本项目所用数据集是美国<a href="https://www.prosper.com/">Prosper</a>公司在2008-2014约11万条贷款交易记录。针对Prosper在2009年第二季度重新启动交易平台到2014第一季度的贷款记录，为了探索何种信用等级的人投资回报最大，统计了不同信用等级的人在交易平台预计的回报，利润，损失，并据此建立了可视化图表。可以发现信用等级为E的贷款者的预计回报一直保持高位，在2012内第四季度以后才被HR小幅度超越。<a href="https://bl.ocks.org/CuteLemon/raw/94afcb232d821bf0eedf9c2e9252bae2/">可视化链接</a></p>
 
-<h2 id="section-1">设计</h2>
+<h2 id="section">设计</h2>
 <p>在原始的数据集中，每条交易包含了交易时间，贷款利率，信用评级，风险评级，个人的违约记录，收入范围，债务收入比，投资人总数，贷款用途，职业，雇佣状态等多达81个字段。对数据集进行探索性分析的过程发现投资回报与贷款人的信用评级有较为紧密的联系，那么究竟是何种信用等级的人值得投资呢？考虑到2008年开始的经济危机，以及该交易平台随后的一段关停时期，我选择重点关注该平台在2009年第二季度重新开放后的数据。数据集按信用等级进行分组，分别统计每个季度各组的预计回报，预计损失，预计收益率三个指标的中位数。处理后的数据是时间序列，决定使用曲线图来表达。用复选框给出AA-HR信用等级选项，不被选择的曲线会被隐藏。使用单选框区分评估选项return,yield,loss。用颜色来编码信用等级同时可以增强图形的区分度，颜色接近深绿，信用评级越高，颜色越接进暗红，信用评级越低。</p>
 
-<h2 id="section-2">反馈</h2>
+<h2 id="section-1">反馈</h2>
 
 <p><a href="https://discussions.youdaxue.com/users/wangyh9098/activity">@Wangyh9098</a>
 - 不太明白这是谁的CreditScore，是公司的吗？
@@ -73,9 +72,11 @@
 - 数据背景以及相关变量没有解释清楚。
 - 线条颜色单一，不易区分。</p>
 
-<p>我针对这两个问题对图表进行了改进，并对布局进行了调整作为<a href="https://bl.ocks.org/CuteLemon/raw/94afcb232d821bf0eedf9c2e9252bae2/">第二版</a>。必须指出的是，我的y轴数据并不是零起始，我也与@mengXin同学讨论了我的图表y轴不是零起始是否恰当。@mengXin同学认为lines图表重要的是相对趋势，而bar图需要零起始。考虑到我想传达的信息并不是具体的数值信息而是趋势对比，所以我决定还是保留最开始的y轴非零起始设计以突出趋势变化。
-## 参考资料
-<a href="https://bl.ocks.org/mbostock/3883245">Line Chart-By mbostock</a></p>
+<p>我针对这两个问题对图表进行了改进，并对布局进行了调整作为<a href="https://bl.ocks.org/CuteLemon/raw/94afcb232d821bf0eedf9c2e9252bae2/">第二版</a>。必须指出的是，我的y轴数据并不是零起始，我也与@mengXin同学讨论了我的图表y轴不是零起始是否恰当。@mengXin同学认为lines图表重要的是相对趋势，而bar图需要零起始。考虑到我想传达的信息并不是具体的数值信息而是趋势对比，所以我决定还是保留最开始的y轴非零起始设计以突出趋势变化。</p>
+
+<h2 id="section-2">参考资料</h2>
+
+<p><a href="https://bl.ocks.org/mbostock/3883245">Line Chart-By mbostock</a></p>
 
 <p><a href="https://bl.ocks.org/mbostock/3884955">Multi-Series Line Chart-By mbostock</a></p>
 

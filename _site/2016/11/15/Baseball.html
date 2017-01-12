@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+<title>CuteLemon's Blog</title>
+<meta name="description" content="CuteLemon's Blog">
+<meta name="keywords" content="">
+
+<meta property="og:type" content="article">
+<meta property="og:title" content="Baseball &#8211; ">
+<meta property="og:description" content="CuteLemon's Blog">
+<meta property="og:url" content="http://localhost:4000/2016/11/15/Baseball.html">
+<meta property="og:site_name" content="">
+
+<!-- Webmaster Tools verfication -->
+
+
+
+
+<link rel="canonical" href="http://localhost:4000/2016/11/15/Baseball.html">
+<link href="http://localhost:4000/feed.xml" type="application/atom+xml" rel="alternate" title=" Feed">
+
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<link rel="stylesheet" href="http://localhost:4000/css/base.min.css" type="text/css" />
+<link rel="stylesheet" href="http://localhost:4000/css/github.min.css" type="text/css" />
+<link rel="stylesheet" href="http://localhost:4000/css/octicons.css" type="text/css" />
+<link href='http://fonts.googleapis.com/css?family=Lato' rel='stylesheet' type='text/css'>
+
+</head>
+<body>
+  <div class="header-container">
+  <header>
+      <ul class="nav">
+        <!--Change the  URL here if working on an absolute domain-->
+        <li><a href="/"><span class="mega-octicon octicon-terminal" style="margin-right: 6px;"></span>White Paper</a></li>
+        <li><a href="/about"><span class="mega-octicon octicon-person" style="margin-right: 6px;"></span>About</a></li>
+      </ul>
+  </header>
+</div>
+
+  <div class="container">
+    <p class="intro">
+      A Blog of Data Science.
+    </p>
+  <h2>Baseball</h2>
+<p class="meta">15 Nov 2016</p>
+
+<div class="post">
+<p>从美国职业棒球联赛数据分析球员表现。</p>
+
+<h2 id="whats-the-characteristic-of--players-with-the-highest-salary">what’s the characteristic of  players with the highest salary?</h2>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">pandas</span> <span class="kn">import</span> <span class="n">Series</span><span class="p">,</span><span class="n">DataFrame</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">matplotlib</span>
+<span class="n">matplotlib</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">(</span><span class="s">'ggplot'</span><span class="p">)</span>
+
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="n">file_pitching</span><span class="o">=</span><span class="s">'./core/Pitching.csv'</span>
+<span class="n">file_salary</span><span class="o">=</span><span class="s">'./core/Salaries.csv'</span>
+<span class="n">file_batting</span><span class="o">=</span><span class="s">'./core/Batting.csv'</span>
+<span class="n">file_fielding</span><span class="o">=</span><span class="s">'./core/Fielding.csv'</span>
+
+<span class="n">pitch_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_pitching</span><span class="p">)</span>
+<span class="n">salary_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_salary</span><span class="p">)</span>
+<span class="n">bate_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_batting</span><span class="p">)</span>
+<span class="n">field_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">file_fielding</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<h2 id="merge-the-data">Merge The Data</h2>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="o">=</span><span class="n">salary_data</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">pitch_data</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="p">[</span><span class="s">'playerID'</span><span class="p">],</span><span class="n">how</span><span class="o">=</span><span class="s">'inner'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>yearID_x</th>
+      <th>teamID_x</th>
+      <th>lgID_x</th>
+      <th>playerID</th>
+      <th>salary</th>
+      <th>yearID_y</th>
+      <th>stint</th>
+      <th>teamID_y</th>
+      <th>lgID_y</th>
+      <th>W</th>
+      <th>...</th>
+      <th>IBB</th>
+      <th>WP</th>
+      <th>HBP</th>
+      <th>BK</th>
+      <th>BFP</th>
+      <th>GF</th>
+      <th>R</th>
+      <th>SH</th>
+      <th>SF</th>
+      <th>GIDP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1985</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>barkele01</td>
+      <td>870000</td>
+      <td>1976</td>
+      <td>1</td>
+      <td>TEX</td>
+      <td>AL</td>
+      <td>1</td>
+      <td>...</td>
+      <td>0.0</td>
+      <td>1.0</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>56.0</td>
+      <td>0.0</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1985</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>barkele01</td>
+      <td>870000</td>
+      <td>1977</td>
+      <td>1</td>
+      <td>TEX</td>
+      <td>AL</td>
+      <td>4</td>
+      <td>...</td>
+      <td>3.0</td>
+      <td>5.0</td>
+      <td>1.0</td>
+      <td>0</td>
+      <td>196.0</td>
+      <td>7.0</td>
+      <td>15</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1985</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>barkele01</td>
+      <td>870000</td>
+      <td>1978</td>
+      <td>1</td>
+      <td>TEX</td>
+      <td>AL</td>
+      <td>1</td>
+      <td>...</td>
+      <td>2.0</td>
+      <td>6.0</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>243.0</td>
+      <td>15.0</td>
+      <td>31</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1985</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>barkele01</td>
+      <td>870000</td>
+      <td>1979</td>
+      <td>1</td>
+      <td>CLE</td>
+      <td>AL</td>
+      <td>6</td>
+      <td>...</td>
+      <td>1.0</td>
+      <td>10.0</td>
+      <td>2.0</td>
+      <td>0</td>
+      <td>609.0</td>
+      <td>3.0</td>
+      <td>79</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1985</td>
+      <td>ATL</td>
+      <td>NL</td>
+      <td>barkele01</td>
+      <td>870000</td>
+      <td>1980</td>
+      <td>1</td>
+      <td>CLE</td>
+      <td>AL</td>
+      <td>19</td>
+      <td>...</td>
+      <td>3.0</td>
+      <td>14.0</td>
+      <td>3.0</td>
+      <td>1</td>
+      <td>1052.0</td>
+      <td>0.0</td>
+      <td>127</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+    </tr>
+  </tbody>
+</table>
+<p>5 rows × 34 columns</p>
+</div>
+
+<h2 id="data-clean">Data Clean</h2>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>134044
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>yearID_x         0
+teamID_x         0
+lgID_x           0
+playerID         0
+salary           0
+yearID_y         0
+stint            0
+teamID_y         0
+lgID_y           0
+W                0
+L                0
+G                0
+GS               0
+CG               0
+SHO              0
+SV               0
+IPouts           1
+H                0
+ER               0
+HR               0
+BB               0
+SO               0
+BAOpp         5199
+ERA             79
+IBB              1
+WP               0
+HBP              1
+BK               0
+BFP              0
+GF               0
+R                0
+SH           66291
+SF           66291
+GIDP        131238
+dtype: int64
+</code></pre>
+</div>
+
+<p>There is a lot of NaN values,drop it first.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[[</span><span class="s">'salary'</span><span class="p">,</span><span class="s">'GIDP'</span><span class="p">,</span><span class="s">'HR'</span><span class="p">,</span><span class="s">'BFP'</span><span class="p">]]</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<h2 id="single-variable-analysis">Single Variable Analysis</h2>
+
+<h3 id="whats-the-salary-distribution">What’s the salary distribution?</h3>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="c"># statistic infomation</span>
+<span class="n">pitch_salary</span><span class="o">.</span><span class="n">describe</span><span class="p">()</span>
+</code></pre>
+</div>
+
+<div>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>salary</th>
+      <th>GIDP</th>
+      <th>HR</th>
+      <th>BFP</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>count</th>
+      <td>2.806000e+03</td>
+      <td>2806.000000</td>
+      <td>2806.000000</td>
+      <td>2806.000000</td>
+    </tr>
+    <tr>
+      <th>mean</th>
+      <td>3.038182e+06</td>
+      <td>6.347113</td>
+      <td>7.503207</td>
+      <td>328.238061</td>
+    </tr>
+    <tr>
+      <th>std</th>
+      <td>4.243933e+06</td>
+      <td>6.021705</td>
+      <td>7.126248</td>
+      <td>274.787982</td>
+    </tr>
+    <tr>
+      <th>min</th>
+      <td>1.090000e+05</td>
+      <td>0.000000</td>
+      <td>0.000000</td>
+      <td>1.000000</td>
+    </tr>
+    <tr>
+      <th>25%</th>
+      <td>4.862000e+05</td>
+      <td>2.000000</td>
+      <td>2.000000</td>
+      <td>113.000000</td>
+    </tr>
+    <tr>
+      <th>50%</th>
+      <td>9.500000e+05</td>
+      <td>5.000000</td>
+      <td>5.000000</td>
+      <td>253.000000</td>
+    </tr>
+    <tr>
+      <th>75%</th>
+      <td>4.000000e+06</td>
+      <td>10.000000</td>
+      <td>12.000000</td>
+      <td>506.000000</td>
+    </tr>
+    <tr>
+      <th>max</th>
+      <td>3.257100e+07</td>
+      <td>36.000000</td>
+      <td>29.000000</td>
+      <td>961.000000</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span><span class="mi">5</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'Salary'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s">'Count'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;matplotlib.text.Text at 0x9afd0f0&gt;
+</code></pre>
+</div>
+
+<p><img src="output_13_1.png" alt="png" /></p>
+
+<p>Most players have the salary less than 10,0000 dollars.I will make four levels of the salary range and use a pie chart to  see the percentage of each level.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">salary_min</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="nb">min</span><span class="p">()</span>
+<span class="n">salary_max</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="nb">max</span><span class="p">()</span>
+<span class="n">salary_group</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="n">salary_min</span><span class="p">,</span><span class="n">salary_max</span><span class="o">+</span><span class="mi">1</span><span class="p">,(</span><span class="n">salary_max</span><span class="o">-</span><span class="n">salary_min</span><span class="p">)</span><span class="o">/</span><span class="mi">4</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">t</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">tag</span> <span class="ow">in</span> <span class="n">salary_group</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">x</span><span class="o">&lt;</span><span class="n">tag</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span><span class="n">tag</span><span class="o">/</span><span class="mi">100000</span><span class="p">)</span>
+<span class="n">m</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">m</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+<span class="n">b</span><span class="o">=</span><span class="n">m</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s">'salary'</span><span class="p">)</span>
+<span class="n">b</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+<span class="n">b</span><span class="o">.</span><span class="n">count</span><span class="p">()</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">pie</span><span class="p">(</span><span class="n">autopct</span><span class="o">=</span><span class="s">'</span><span class="si">%.1</span><span class="s">f'</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span><span class="mi">8</span><span class="p">))</span>
+<span class="c"># plt.xlabel('Salary')</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s">'uint:10,000 dollars'</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s">'Salary Distribution'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>&lt;matplotlib.text.Text at 0xa554978&gt;
+</code></pre>
+</div>
+
+<p><img src="output_15_1.png" alt="png" /></p>
+
+<h3 id="conclusion">conclusion</h3>
+<p>The figure above shows that most players(nearly 90%) have the salary below 0.82 million dolloars.Less than 10% of the players has more than 1 million dollars.Define the players who has more than 1 million dollars salary as well-paid players.</p>
+
+<h2 id="double-variable-analysis">Double Variable Analysis:</h2>
+
+<h3 id="whats-the-relationship-betweent-the-factor-and-salary">What’s the relationship betweent the factor and salary?</h3>
+
+<p>I choose the BFP,GIDP,HR to analysis.Take a look of these factors’s distribution.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">pitch_salary</span><span class="p">[[</span><span class="s">'BFP'</span><span class="p">,</span><span class="s">'GIDP'</span><span class="p">,</span><span class="s">'HR'</span><span class="p">,</span><span class="s">'salary'</span><span class="p">]]</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">5</span><span class="p">,))</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>array([[&lt;matplotlib.axes._subplots.AxesSubplot object at 0x0000000003BF3898&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x000000000E8EA908&gt;],
+       [&lt;matplotlib.axes._subplots.AxesSubplot object at 0x000000000A9FCEB8&gt;,
+        &lt;matplotlib.axes._subplots.AxesSubplot object at 0x000000000DCF25C0&gt;]], dtype=object)
+</code></pre>
+</div>
+
+<p><img src="output_19_1.png" alt="png" /></p>
+
+<p>HR,GIDP,salary have the same distribution.But the BFP’s distribution seems different.There is a fall around 100 and a bounce around 700.</p>
+
+<h3 id="is-there-any-linear-relationship-between-these-factors-and-salary">Is there any linear relationship between these factors and salary?</h3>
+
+<p>I will check the scatter plot and calculate the $R^2$ to evaluation the linear relationship.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">r2_score</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
+
+<span class="c"># this function caculate the r^2 and make the scatter plot</span>
+<span class="k">def</span> <span class="nf">R_2</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="n">slope</span><span class="p">,</span> <span class="n">intercept</span><span class="p">,</span> <span class="n">r_value</span><span class="p">,</span> <span class="n">p_value</span><span class="p">,</span> <span class="n">std_err</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">linregress</span><span class="p">(</span><span class="n">pitch_salary</span><span class="p">[</span><span class="n">item</span><span class="p">],</span><span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">])</span>
+    <span class="n">pitch_salary</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">scatter</span><span class="p">(</span><span class="n">x</span> <span class="o">=</span> <span class="n">item</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="s">'salary'</span><span class="p">,</span><span class="n">s</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="n">item</span><span class="o">+</span><span class="s">'-Salary Scatter'</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">r_value</span><span class="o">**</span><span class="mi">2</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">R_2</span><span class="p">(</span><span class="s">'HR'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>0.088281672003010361
+</code></pre>
+</div>
+
+<p><img src="output_24_1.png" alt="png" /></p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">R_2</span><span class="p">(</span><span class="s">'GIDP'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>0.066004780276815292
+</code></pre>
+</div>
+
+<p><img src="output_25_1.png" alt="png" /></p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">R_2</span><span class="p">(</span><span class="s">'BFP'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>0.097620388739633468
+</code></pre>
+</div>
+
+<p><img src="output_26_1.png" alt="png" /></p>
+
+<h3 id="conlusion">conlusion</h3>
+<p>As all the R^2 are smaller than 0.1,there is no strong linear relationship between those factor and salary.But maybe there is other nolinear relationship.</p>
+
+<h2 id="whats-the-difference-betweent-the-well-paid-players-and-others">What’s the difference betweent the well-paid players and others?</h2>
+
+<p>We think well-paid players will have the better perfomance than others.Is it true?</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">well_paid_boundry</span> <span class="o">=</span> <span class="mi">8200000</span>
+<span class="n">well_paid_pitcher</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">&gt;</span><span class="n">well_paid_boundry</span><span class="p">]</span>
+<span class="n">other_pitcher</span> <span class="o">=</span> <span class="n">pitch_salary</span><span class="p">[</span><span class="n">pitch_salary</span><span class="p">[</span><span class="s">'salary'</span><span class="p">]</span><span class="o">&lt;=</span><span class="n">well_paid_boundry</span><span class="p">]</span>
+<span class="c"># used for plot density map</span>
+<span class="k">def</span> <span class="nf">density_map</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="n">well_paid_pitcher</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span> <span class="o">=</span> <span class="s">'density'</span><span class="p">,</span><span class="n">title</span> <span class="o">=</span> <span class="n">item</span><span class="o">+</span><span class="s">'-'</span><span class="o">+</span><span class="s">'density map'</span><span class="p">)</span>
+    <span class="n">other_pitcher</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span> <span class="o">=</span> <span class="s">'density'</span><span class="p">)</span>
+    <span class="k">return</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">density_map</span><span class="p">(</span><span class="s">'HR'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p><img src="output_31_0.png" alt="png" /></p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">density_map</span><span class="p">(</span><span class="s">'BFP'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p><img src="output_32_0.png" alt="png" /></p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">density_map</span><span class="p">(</span><span class="s">'GIDP'</span><span class="p">)</span>
+</code></pre>
+</div>
+
+<p><img src="output_33_0.png" alt="png" /></p>
+
+<p>The red lines represent the well-paid players,the blue lines represent the others.We can find that well-paid have much higher score than the others.</p>
+
+<h3 id="hypothesis-testing">Hypothesis testing</h3>
+
+<p>Null Hypothesis:well-paid players have the same BFP as other players.<br />
+Alternative Hypothesis: well-paid players have more BFP than other players.<br />
+Use $\mu_0$ as the mean of well-paid players,$\mu_1$ as the mean of other players.<br />
+$\alpha=0.01$</p>
+
+<p>$H_0:{\mu_0=\mu_1}$</p>
+
+<p>$H_\alpha:{\mu_0&gt;\mu_1}$<br />
+$t_{critical} = 2.6$</p>
+
+<p>We need to caculate the SS to get the t_stastic.</p>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="k">def</span> <span class="nf">t_test</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span><span class="n">x2</span><span class="p">):</span>
+    <span class="n">avg1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">avg2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="n">x1</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="n">x2</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+    <span class="n">df1</span> <span class="o">=</span> <span class="n">n1</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">df2</span> <span class="o">=</span> <span class="n">n2</span> <span class="o">-</span> <span class="mi">1</span>
+    <span class="n">SS1</span> <span class="o">=</span> <span class="p">((</span><span class="n">x1</span> <span class="o">-</span> <span class="n">avg1</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x1</span><span class="o">-</span><span class="n">avg1</span><span class="p">))</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span>
+    <span class="n">SS2</span> <span class="o">=</span> <span class="p">((</span><span class="n">x2</span> <span class="o">-</span> <span class="n">avg2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">x2</span><span class="o">-</span><span class="n">avg2</span><span class="p">))</span><span class="o">.</span><span class="nb">sum</span><span class="p">()</span>
+    <span class="n">S_p2</span> <span class="o">=</span> <span class="p">(</span><span class="n">SS1</span><span class="o">+</span><span class="n">SS2</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">df1</span><span class="o">+</span><span class="n">df2</span><span class="p">)</span>
+    <span class="n">S_xy</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">S_p2</span><span class="o">/</span><span class="n">n1</span><span class="o">+</span><span class="n">S_p2</span><span class="o">/</span><span class="n">n2</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">avg1</span><span class="o">-</span><span class="n">avg2</span><span class="p">)</span><span class="o">/</span><span class="n">S_xy</span>
+    <span class="k">return</span> <span class="n">t</span>
+</code></pre>
+</div>
+
+<div class="language-python highlighter-rouge"><pre class="highlight"><code><span class="n">t_test</span><span class="p">(</span><span class="n">well_paid_pitcher</span><span class="p">[</span><span class="s">'BFP'</span><span class="p">],</span><span class="n">other_pitcher</span><span class="p">[</span><span class="s">'BFP'</span><span class="p">])</span>
+</code></pre>
+</div>
+
+<div class="highlighter-rouge"><pre class="highlight"><code>16.340974029004389
+</code></pre>
+</div>
+
+<p>$t_{statistic} = 16.34$</p>
+
+<h3 id="conclusion-1">conclusion</h3>
+<p>We reject the null hypothesis and retain the alternative hypothesis.Players with well-paid have more BFP than the other players.<br />
+Use the same method we can get the similar conclusion in GIDP and HR.It’s can be convinced that well-paid players also have a higher factor such as BFP,HR and GIDP.</p>
+
+<h2 id="summary">Summary</h2>
+<p>At first,I drop many NaN values to make anlysist easier.But it also bring some problem.It makes the sample smaller.As there is no other information why those values are lost,the analysist may go wrong.</p>
+
+</div>
+
+<div class="keep-in-touch">
+  <p>
+    
+  </p>
+</div>
+<a href="https://twitter.com/share" class="twitter-share-button" data-via="" data-size="large" data-hashtags="gotchacode">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+
+  
+
+<script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', '']);
+  _gaq.push(['_trackPageview']);
+  (function() {
+  var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+  ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+  var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+</script>
+
+  </div><!-- /.main -->
+</body>
+</html>

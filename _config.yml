@@ -3,7 +3,7 @@ kramkdown: redcarpet
 highlighter: pygments
 url: https://cutelemon.github.io/
 paginate: 8
-description:     Jekyll theme for Programmers
+description:     CuteLemon's Blog
 intro: A Blog of Data Science.
 logo:             logo.png
 disqus_shortname:
